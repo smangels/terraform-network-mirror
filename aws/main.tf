@@ -13,7 +13,6 @@ provider "aws" {
   region = local.aws_region
 }
 
-# Make sure all objects are public, Demo only - you can lock this down if you like
 resource "aws_s3_bucket" "mirror" {
   bucket = local.s3_bucket_name
   tags   = local.tags
@@ -24,7 +23,6 @@ resource "aws_s3_bucket_acl" "mirror" {
   acl    = "public-read"
 }
 
-# Loop through the mirror directory and upload it as-is to the bucket
 resource "aws_s3_object" "mirror_objects" {
   for_each = fileset(local.mirror_directory, "**")
 
