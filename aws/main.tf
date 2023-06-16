@@ -1,5 +1,5 @@
 
-variabel "aws_profile" {
+variable "aws_sso_profile" {
   type        = string
   description = "name of the SSO profile configured locally, TF_VAR_aws_profile"
 }
