@@ -1,6 +1,11 @@
+
+variabel "aws_profile" {
+  type        = string
+  description = "name of the SSO profile configured locally, TF_VAR_aws_profile"
+}
+
 locals {
   aws_region       = "eu-central-1"
-  aws_sso_profile  = "aws-sebman"
   s3_bucket_name   = "terraform-network-mirror"
   mirror_directory = "../mirror"
 
@@ -12,7 +17,7 @@ locals {
 
 provider "aws" {
   region  = local.aws_region
-  profile = local.aws_sso_profile
+  profile = var.aws_sso_profile
 }
 
 resource "aws_s3_bucket" "mirror" {
