@@ -1,16 +1,18 @@
 locals {
-  aws_region       = "us-west-1"
-  s3_bucket_name   = "tstraub-network-mirror"
+  aws_region       = "eu-central-1"
+  aws_sso_profile  = "aws-sebman"
+  s3_bucket_name   = "terraform-network-mirror"
   mirror_directory = "../mirror"
 
   tags = {
-    owner = "straub"
+    owner = "smangels"
     acl   = "public-read"
   }
 }
 
 provider "aws" {
-  region = local.aws_region
+  region  = local.aws_region
+  profile = local.aws_sso_profile
 }
 
 resource "aws_s3_bucket" "mirror" {
@@ -18,7 +20,28 @@ resource "aws_s3_bucket" "mirror" {
   tags   = local.tags
 }
 
+resource "aws_s3_bucket_ownership_controls" "mirror" {
+  bucket = aws_s3_bucket.mirror.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "mirror" {
+  bucket = aws_s3_bucket.mirror.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 resource "aws_s3_bucket_acl" "mirror" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.mirror,
+    aws_s3_bucket_public_access_block.mirror,
+  ]
+
   bucket = aws_s3_bucket.mirror.id
   acl    = "public-read"
 }
